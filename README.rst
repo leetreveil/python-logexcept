@@ -41,8 +41,15 @@ TODO
 
 Django
 -----
-TODO
 
+.. code:: python
+
+    from logexcept import create_exchook
+
+    class ExceptionHandlerMiddleware(object):
+        def process_exception(self, request, exception):
+            create_exchook()(*sys.exc_info())
+            return None
 
 Licence
 ----
