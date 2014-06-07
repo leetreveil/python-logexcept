@@ -12,6 +12,12 @@ def create_exchook(file=sys.stderr):
         def _print(str='', terminator='\n'):
             file.write(str + terminator)
 
+        def _get_global_loggers_from_frame(frame):
+            # TODO: optimze by looking for common variable
+            #       names first, e.g. 'logger' or 'LOGGER'
+            return [frame.f_globals[x] for x in frame.f_globals
+                if isinstance(frame.f_globals[x], logging.Logger)]
+
         if hasattr(sys, 'tracebacklimit'):
             limit = sys.tracebacklimit
         else:
@@ -22,7 +28,7 @@ def create_exchook(file=sys.stderr):
             frame = tb.tb_frame
 
             handlers = []
-            global_loggers = [frame.f_globals[x] for x in frame.f_globals if isinstance(frame.f_globals[x], logging.Logger)]
+            global_loggers = _get_global_loggers_from_frame(frame)
             for logger in global_loggers:
                 handlers += [x for x in logger.handlers if isinstance(x, LogCollector)]
 
