@@ -22,6 +22,7 @@ def create_exchook():
             for logger in global_loggers:
                 handlers += [x for x in logger.handlers if isinstance(x, LogCollector)]
 
+            handler = None
             try:
                 handler = handlers[0]
             except IndexError:
