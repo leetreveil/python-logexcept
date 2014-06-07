@@ -68,7 +68,8 @@ def create_exchook(file=sys.stderr):
         file.write('Traceback (most recent call last):\n')
         map(file.write, traceback.format_list(list))
         map(file.write, traceback.format_exception_only(etype, value))
-        # TODO: we can empty the logs in all the handlers now, potential memory leak?
+
+        handler.logs.clear()
 
     return exchook
 
