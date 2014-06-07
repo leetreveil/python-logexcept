@@ -9,9 +9,6 @@ def create_exchook(file=sys.stderr):
 
     def exchook(etype, value, tb):
 
-        def _print(str='', terminator='\n'):
-            file.write(str + terminator)
-
         def _get_global_loggers_from_frame(frame):
             # TODO: optimze by looking for common variable
             #       names first, e.g. 'logger' or 'LOGGER'
@@ -50,24 +47,24 @@ def create_exchook(file=sys.stderr):
             else: line = ''
 
             if handler:
-                logs = [x for x in handler.logs if x.funcName == frame.f_code.co_name]
+                logs = [x for x in handler.logs if x.funcName == co.co_name]
                 if len(logs) > 0:
-                    new_msg = line + '\n    logs:\n'
-                    for log_record in logs:
-                        # TODO: don't add newline to end of last msg
-                        # TODO: windows newlines
-                        x = '        line %d, msg: %s\n' % (log_record.lineno, handler.format(log_record))
-                        new_msg += x
-                    line = new_msg
+                    log_msg = '\n    logs:\n'
+                    for pos, log_record in enumerate(logs):
+                        log_msg += ' ' * 8
+                        log_msg += 'line %d, msg: %s' % (log_record.lineno, handler.format(log_record))
+                        if pos != len(logs) -1:
+                            log_msg += '\n'
+                    line += log_msg
 
             list.append((filename, lineno, name, line))
 
             tb = tb.tb_next
             n = n+1
 
-        _print('Traceback (most recent call last):\n')
-        map(_print, traceback.format_list(list))
-        map(_print, traceback.format_exception_only(etype, value))
+        file.write('Traceback (most recent call last):\n')
+        map(file.write, traceback.format_list(list))
+        map(file.write, traceback.format_exception_only(etype, value))
         # TODO: we can empty the logs in all the handlers now, potential memory leak?
 
     return exchook
