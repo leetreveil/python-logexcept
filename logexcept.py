@@ -5,9 +5,13 @@ import sys
 import traceback
 
 
-def create_exchook():
+def create_exchook(file=sys.stderr):
 
     def exchook(etype, value, tb):
+
+        def _print(str='', terminator='\n'):
+            file.write(str + terminator)
+
         if hasattr(sys, 'tracebacklimit'):
             limit = sys.tracebacklimit
         else:
@@ -55,9 +59,9 @@ def create_exchook():
             tb = tb.tb_next
             n = n+1
 
-        sys.stderr.write('Traceback (most recent call last):\n')
-        map(sys.stderr.write, traceback.format_list(list))
-        map(sys.stderr.write, traceback.format_exception_only(etype, value))
+        _print('Traceback (most recent call last):\n')
+        map(_print, traceback.format_list(list))
+        map(_print, traceback.format_exception_only(etype, value))
         # TODO: we can empty the logs in all the handlers now, potential memory leak?
 
     return exchook
