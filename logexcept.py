@@ -5,7 +5,7 @@ import sys
 import traceback
 
 
-def create_exchook(file=sys.stderr):
+def create_exchook(file=sys.stderr, max_lines_per_function=25):
 
     def exchook(etype, value, tb):
 
@@ -57,7 +57,7 @@ def create_exchook(file=sys.stderr):
             (filename, lineno, fn_name, line) = _extract_traceback(tb)
 
             if handler:
-                logs = [x for x in handler.logs if x.funcName == fn_name]
+                logs = [x for x in handler.logs if x.funcName == fn_name][-max_lines_per_function:]
                 if len(logs) > 0:
                     line += _create_log_lines(logs)
 
