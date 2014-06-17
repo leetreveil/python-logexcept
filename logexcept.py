@@ -52,7 +52,6 @@ def create_exchook(file=sys.stderr, max_lines_per_function=25):
         file.write('Traceback (most recent call last):\n')
         map(file.write, traceback.format_list(list))
         map(file.write, traceback.format_exception_only(etype, value))
-        global_logs.clear()
 
     return exchook
 
